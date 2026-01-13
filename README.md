@@ -51,6 +51,11 @@ Designed for **performance**, **security**, and **simplicity** — no libvirt ov
 
 ## 🚀 Quick Install (Recommended)
 
+
+
+## Warning 
+this current version is beta so many functions will not work
+
 ```bash
 git clone https://github.com/yourusername/aegis-vm-manager.git
 cd aegis-vm-manager
