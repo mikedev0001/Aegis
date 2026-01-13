@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lightweight VM Manager</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1><i class="fas fa-server"></i> VM Manager</h1>
+            <div class="header-actions">
+                <button id="refreshBtn" class="btn btn-secondary">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+                <button id="createVmBtn" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Create VM
+                </button>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="vm-list-container">
+                <h2><i class="fas fa-list"></i> Virtual Machines</h2>
+                <div id="vmList" class="vm-list">
+                    <!-- VM cards will be inserted here -->
+                </div>
+            </div>
+        </main>
+
+        <!-- Create VM Modal -->
+        <div id="createVmModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Create New VM</h2>
+                    <button class="close-btn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="vmForm">
+                        <div class="form-group">
+                            <label for="vmName">VM Name</label>
+                            <input type="text" id="vmName" required placeholder="e.g., Ubuntu-Server">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="isoPath">ISO File Path</label>
+                            <div class="file-input-group">
+                                <input type="text" id="isoPath" required 
+                                       placeholder="/path/to/ubuntu.iso">
+                                <button type="button" id="browseIsoBtn" class="btn btn-secondary">
+                                    <i class="fas fa-folder-open"></i> Browse
+                                </button>
+                            </div>
+                            <input type="file" id="isoUpload" accept=".iso" hidden>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="memory">Memory (MB)</label>
+                                <input type="number" id="memory" min="256" max="32768" 
+                                       value="2048" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="cpu">CPU Cores</label>
+                                <input type="number" id="cpu" min="1" max="16" 
+                                       value="2" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="disk">Disk Size (GB)</label>
+                                <input type="number" id="disk" min="10" max="1000" 
+                                       value="20" required>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary close-btn">Cancel</button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-play"></i> Create & Start VM
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- VM Console Modal -->
+        <div id="consoleModal" class="modal">
+            <div class="modal-content fullscreen">
+                <div class="modal-header">
+                    <h2 id="consoleTitle">VM Console</h2>
+                    <div class="console-controls">
+                        <button id="sendCtrlAltDel" class="btn btn-secondary" title="Send Ctrl+Alt+Del">
+                            <i class="fas fa-power-off"></i> Ctrl+Alt+Del
+                        </button>
+                        <button class="close-btn">&times;</button>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div id="consoleContainer">
+                        <div id="noVncContainer"></div>
+                        <div id="consoleStatus" class="console-status">
+                            <i class="fas fa-spinner fa-spin"></i> Connecting to console...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- noVNC library -->
+    <script src="lib/noVNC/app/ui.js"></script>
+    <script src="lib/noVNC/core/rfb.js"></script>
+    
+    <!-- Application scripts -->
+    <script src="js/app.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/vm-control.js"></script>
+    <script src="js/console.js"></script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+[server]
+host = "127.0.0.1"
+port = 3030
+data_dir = "/var/lib/vm-manager"
+
+[qemu]
+path = "/usr/bin/qemu-system-x86_64"
+enable_kvm = true
+default_cpu = "host"
+default_machine = "pc"
+
+[limits]
+max_vms = 10
+max_memory_mb = 32768
+max_cpu_cores = 16
+max_disk_gb = 1000
+
+[network]
+default_bridge = "virbr0"
+nat_network = "192.168.122.0/24"
+
+[vnc]
+min_port = 5900
+max_port = 5999
+websockify_port = 6080
+
+[security]
+require_vnc_password = false
+isolate_network = true
+sandbox_vms = true

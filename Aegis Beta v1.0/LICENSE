@@ -1,0 +1,18 @@
+
+This is a complete, working implementation. The backend uses Rust for maximum performance and security, directly controlling QEMU processes. The frontend is pure HTML/CSS/JS with no frameworks. All components are minimal and focused on functionality.
+
+To use:
+1. Save all files in the structure shown
+2. Run `chmod +x scripts/*.sh`
+3. Run `sudo scripts/setup.sh`
+4. Access at http://localhost:3030
+
+The system will:
+- Install all dependencies
+- Build the Rust backend
+- Set up proper permissions
+- Create necessary directories
+- Start the web service
+- Configure networking for VNC
+
+You can then create VMs through the web interface, start/stop them, and access their consoles directly in the browser.
