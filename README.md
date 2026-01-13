@@ -1,38 +1,45 @@
-Aegis VM Manager
-A lightweight, web-based virtual machine management tool with direct QEMU/KVM control. Built for performance, security, and simplicity.
+🛡️ Aegis VM Manager
 
-https://img.shields.io/badge/Status-Beta-orange
-https://img.shields.io/badge/Backend-Rust-red
-https://img.shields.io/badge/Frontend-Vanilla%2520JS-yellow
-https://img.shields.io/badge/License-MIT-green
+A lightweight, web-based virtual machine manager with direct QEMU/KVM control.
+Built for performance, security, and simplicity—without libvirt overhead.
+
+
+
+
+
+
+
 
 🚀 Features
-Core Features
-Web-based Management: Clean, minimal dashboard for VM operations
+Core
 
-Direct QEMU/KVM Control: No libvirt overhead, maximum performance
+🌐 Web-Based Dashboard – Clean and minimal UI
 
-VNC Console in Browser: Embedded noVNC support for VM access
+⚙️ Direct QEMU/KVM Control – No libvirt, maximum performance
 
-Multiple VM Isolation: Secure namespace-based sandboxing
+🖥️ Browser VNC Console – Embedded noVNC
 
-Low Resource Usage: Optimized for low-end hardware
+🔒 Strong VM Isolation – Namespace-based sandboxing
+
+🧠 Low Resource Usage – Designed for low-end hardware
 
 VM Management
+
 Create VMs from ISO files (local or uploaded)
 
-Configure RAM, CPU cores, disk size
+Configure RAM, CPU cores, and disk size
 
-Start/Stop/Delete VM operations
+Start / Stop / Delete VMs
 
 Real-time status monitoring
 
 Console access via WebSocket
 
 Security
-Process sandboxing with namespaces
 
-Input validation and sanitization
+Process sandboxing using Linux namespaces
+
+Strict input validation & sanitization
 
 Command injection prevention
 
@@ -42,98 +49,79 @@ Network isolation
 
 📋 Requirements
 Hardware
-x86_64 CPU with virtualization support (Intel VT-x or AMD-V)
 
-Minimum 2GB RAM (4GB+ recommended)
+x86_64 CPU with virtualization support (Intel VT-x / AMD-V)
 
-20GB+ free disk space
+Minimum: 2 GB RAM
+
+Recommended: 4 GB+ RAM
+
+20 GB+ free disk space
 
 Software
-OS: Linux (Ubuntu 20.04+, Debian 11+, Fedora 34+, or Arch Linux)
 
-KVM: Kernel-based Virtual Machine support
+OS: Linux (Ubuntu 20.04+, Debian 11+, Fedora 34+, Arch)
 
-QEMU: 5.0 or newer
+KVM: Enabled kernel virtualization
 
-Rust: 1.70+ (for building backend)
+QEMU: v5.0+
+
+Rust: v1.70+ (backend build)
 
 Root Access: Required for setup
 
-🛠️ Quick Installation
-One-Command Install (Recommended)
-bash
-# Clone the repository
+🛠️ Installation
+🚀 One-Command Install (Recommended)
 git clone https://github.com/yourusername/aegis-vm-manager.git
 cd aegis-vm-manager
-
-# Run automated setup (requires sudo)
 sudo make setup
-Wait for the script to complete, then access: http://localhost:3030
 
-Step-by-Step Manual Install
-Check virtualization support:
 
-bash
-grep -E -c '(vmx|svm)' /proc/cpuinfo  # Should return > 0
-sudo apt-get install cpu-checker && kvm-ok
-Install dependencies:
+Then open:
+👉 http://localhost:3030
 
-bash
-sudo apt-get update
-sudo apt-get install -y \
-    qemu-kvm \
-    qemu-utils \
-    libvirt-daemon-system \
-    bridge-utils \
-    websockify \
-    build-essential \
-    libssl-dev
-Add user to required groups:
+🔧 Manual Installation
+1. Check virtualization support
+grep -E -c '(vmx|svm)' /proc/cpuinfo
+sudo apt install cpu-checker && kvm-ok
 
-bash
-sudo usermod -aG kvm $USER
-sudo usermod -aG libvirt $USER
-# Log out and back in for changes to take effect
-Build and install:
+2. Install dependencies
+sudo apt update
+sudo apt install -y \
+  qemu-kvm qemu-utils libvirt-daemon-system \
+  bridge-utils websockify build-essential libssl-dev
 
-bash
-# Install Rust if not present
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-source $HOME/.cargo/env
+3. Add user to groups
+sudo usermod -aG kvm,libvirt $USER
+logout
 
-# Build backend
+4. Build backend
+curl https://sh.rustup.rs -sSf | sh
+source ~/.cargo/env
+
 cd backend
 cargo build --release
 sudo cp target/release/vm-manager /usr/local/bin/
 
-# Setup directories
+5. Setup directories & service
 sudo mkdir -p /var/lib/vm-manager/{isos,disks,configs,logs}
 sudo chown -R $USER:$USER /var/lib/vm-manager
 
-# Install systemd service
-sudo cp ../systemd/vm-manager.service /etc/systemd/system/
+sudo cp systemd/vm-manager.service /etc/systemd/system/
 sudo systemctl daemon-reload
-sudo systemctl enable vm-manager
-sudo systemctl start vm-manager
-Access the web interface:
-
-Open browser to: http://localhost:3030
+sudo systemctl enable --now vm-manager
 
 📖 Usage Guide
 Creating Your First VM
-Prepare an ISO:
-
-bash
-# Download a test ISO (e.g., Alpine Linux)
-sudo wget https://dl-cdn.alpinelinux.org/alpine/v3.18/releases/x86_64/alpine-standard-3.18.0-x86_64.iso \
+1. Download an ISO
+wget https://dl-cdn.alpinelinux.org/alpine/v3.18/releases/x86_64/alpine-standard-3.18.0-x86_64.iso \
   -P /var/lib/vm-manager/isos/
-Access Web Interface:
 
-Open http://localhost:3030
+2. Open Dashboard
 
-Click "Create VM" button
+👉 http://localhost:3030
 
-Configure VM:
+3. Create VM
 
 Name: my-first-vm
 
@@ -141,320 +129,147 @@ ISO Path: /var/lib/vm-manager/isos/alpine-standard-3.18.0-x86_64.iso
 
 Memory: 1024 MB
 
-CPU Cores: 2
+CPU: 2 cores
 
-Disk Size: 10 GB
+Disk: 10 GB
 
-Click "Create & Start"
+Click Create & Start
 
-Access Console:
+4. Access Console
 
-Wait for VM status to show "Running"
+Wait for status: Running
 
-Click "Console" button
+Click Console
 
-Install OS through web interface
+Install OS directly from browser
 
-Example VM Configurations
-Ubuntu Server:
+⚙️ Configuration
+Main Config File
 
-bash
-# Download Ubuntu Server ISO
-wget https://releases.ubuntu.com/22.04/ubuntu-22.04.3-live-server-amd64.iso \
-  -P /var/lib/vm-manager/isos/
-Memory: 2048 MB
+📄 /etc/vm-manager/default.toml
 
-CPU Cores: 2
-
-Disk: 20 GB
-
-Windows 10:
-
-Memory: 4096 MB
-
-CPU Cores: 4
-
-Disk: 50 GB
-
-BIOS: OVMF (for UEFI)
-
-🔧 Configuration
-Main Configuration File
-Edit /etc/vm-manager/default.toml:
-
-toml
 [server]
-host = "127.0.0.1"  # Change to "0.0.0.0" for network access
+host = "127.0.0.1"
 port = 3030
 
 [qemu]
 path = "/usr/bin/qemu-system-x86_64"
 enable_kvm = true
 
-[network]
-default_bridge = "br0"
-nat_network = "192.168.122.0/24"
-
 [limits]
 max_vms = 10
 max_memory_mb = 32768
 max_cpu_cores = 16
+
 Environment Variables
-Create .env file:
-
-bash
 cp .env.example .env
-nano .env
-Key variables:
 
-SERVER_HOST: Bind address (0.0.0.0 for all interfaces)
 
-SERVER_PORT: Web interface port
+SERVER_HOST
 
-DATA_DIR: Path for VM data
+SERVER_PORT
 
-LOG_LEVEL: Debug level (error, warn, info, debug)
+DATA_DIR
+
+LOG_LEVEL
 
 📡 API Reference
-REST API Endpoints
+REST API
 Method	Endpoint	Description
-GET	/api/health	Service health check
-GET	/api/vms	List all VMs
-GET	/api/vms/{id}	Get VM details
-POST	/api/vms	Create new VM
+GET	/api/health	Health check
+GET	/api/vms	List VMs
+POST	/api/vms	Create VM
 POST	/api/vms/{id}/start	Start VM
 POST	/api/vms/{id}/stop	Stop VM
 DELETE	/api/vms/{id}	Delete VM
-GET	/api/vms/{id}/vnc	Get VNC URL
-WebSocket API
-Connect to ws://localhost:3030/ws for real-time updates:
-
-javascript
+WebSocket
 const ws = new WebSocket('ws://localhost:3030/ws');
+ws.onmessage = e => console.log(JSON.parse(e.data));
 
-ws.onmessage = (event) => {
-  const data = JSON.parse(event.data);
-  console.log('VM Update:', data);
-};
-
-// Subscribe to VM updates
-ws.send(JSON.stringify({
-  type: 'subscribe',
-  vm_id: 'vm-uuid-here'
-}));
 🗂️ Project Structure
-text
 aegis-vm-manager/
-├── backend/                 # Rust backend
-│   ├── src/                # Source code
-│   │   ├── api/            # HTTP/WebSocket API
-│   │   ├── vm/             # VM management
-│   │   ├── security/       # Security modules
-│   │   ├── storage/        # ISO/disk management
-│   │   └── utils/          # Utilities
-│   └── Cargo.toml          # Rust dependencies
-├── frontend/               # Web interface
-│   ├── index.html          # Main dashboard
-│   ├── css/                # Stylesheets
-│   ├── js/                 # JavaScript modules
-│   └── lib/noVNC/          # VNC client
-├── config/                 # Configuration files
-├── scripts/                # Setup scripts
-├── systemd/                # Service files
-└── docs/                   # Documentation
+├── backend/      # Rust backend
+├── frontend/     # Web UI
+├── config/       # Config files
+├── scripts/      # Setup scripts
+├── systemd/      # Services
+└── docs/         # Documentation
+
 🚨 Troubleshooting
-Common Issues
-1. "KVM not available"
-bash
-# Enable virtualization in BIOS
-# Check KVM modules
+KVM Not Available
 lsmod | grep kvm
+sudo modprobe kvm kvm_intel   # or kvm_amd
 
-# Load modules
-sudo modprobe kvm
-sudo modprobe kvm_intel  # Intel
-# OR
-sudo modprobe kvm_amd    # AMD
-2. "Permission denied"
-bash
-# Verify group membership
+Permission Denied
 groups $USER
-
-# Add to groups
 sudo usermod -aG kvm,libvirt $USER
-newgrp kvm  # Apply group changes without logout
-3. "Port already in use"
-bash
-# Find process using port
+
+Port in Use
 sudo lsof -i :3030
-sudo lsof -i :6080
 
-# Kill process or change port in config
-4. "QEMU not found"
-bash
-# Install QEMU
-sudo apt-get install qemu-system-x86 qemu-utils
-5. "Cannot create network bridge"
-bash
-# Temporarily disable NetworkManager
-sudo systemctl stop NetworkManager
-
-# Or install bridge utilities
-sudo apt-get install bridge-utils
-Logs and Debugging
-bash
-# View service logs
+Logs
 sudo journalctl -u vm-manager -f
-
-# Run in debug mode
 RUST_LOG=debug vm-manager
 
-# Check websockify logs
-sudo journalctl -u vm-websockify -f
-🔒 Security Considerations
-Production Deployment
-Enable Authentication:
+🔒 Security Recommendations
 
-Use reverse proxy (nginx/apache) with auth
+Use reverse proxy (Nginx) with authentication
 
-Implement API key authentication
-
-Network Security:
+Enable TLS / HTTPS
 
 Change default ports
 
-Use firewall rules
+Apply firewall rules
 
-Enable TLS/HTTPS
+Enforce VM resource limits
 
-VM Isolation:
+Keep system updated
 
-Enable sandboxing in config
-
-Use separate network namespace
-
-Set resource limits
-
-Regular Updates:
-
-Keep system packages updated
-
-Monitor security advisories
-
-Configuration Security
-toml
-[security]
-require_vnc_password = true
-sandbox_vms = true
-isolate_network = true
-max_vms_per_user = 5
 📊 Performance Tuning
-For Low-End Hardware
-Reduce VM overhead:
-
-toml
 [qemu]
-enable_kvm = true
 default_cpu = "host"
-machine_type = "pc-i440fx-2.9"  # Lighter than Q35
-Optimize disk:
+machine_type = "pc-i440fx-2.9"
 
-bash
-# Use qcow2 with compression
 qemu-img create -f qcow2 -o compression_type=zstd disk.qcow2 20G
-Memory management:
 
-Enable KSM (Kernel Samepage Merging)
-
-Use virtio drivers for better performance
-
-Resource Limits
-Edit /etc/vm-manager/default.toml:
-
-toml
-[limits]
-max_vms = 5                    # Maximum concurrent VMs
-max_memory_mb = 8192           # Total memory for all VMs
-max_cpu_cores = 8              # Total CPU cores for all VMs
-max_disk_gb = 200              # Total disk space
 🧪 Testing
-Run Tests
-bash
-# Unit tests
-cd backend && cargo test
+cd backend
+cargo test
 
-# Integration tests
-cargo test --test integration
-
-# E2E tests (requires running service)
-cd tests/e2e && node basic_flow.js
-Test VM Creation
-bash
-# Using curl to test API
 curl -X POST http://localhost:3030/api/vms \
   -H "Content-Type: application/json" \
-  -d '{
-    "name": "test-vm",
-    "iso_path": "/var/lib/vm-manager/isos/test.iso",
-    "memory_mb": 512,
-    "cpu_cores": 1,
-    "disk_size_gb": 10
-  }'
+  -d '{"name":"test-vm","memory_mb":512,"cpu_cores":1,"disk_size_gb":10}'
+
 🤝 Contributing
-Fork the repository
 
-Create a feature branch
+Fork the repo
 
-bash
-git checkout -b feature/amazing-feature
+Create a branch
+
 Commit changes
 
-bash
-git commit -m 'Add amazing feature'
-Push to branch
-
-bash
-git push origin feature/amazing-feature
 Open a Pull Request
 
-Development Setup
-bash
-# Clone and setup dev environment
-git clone <your-fork-url>
-cd aegis-vm-manager
-
-# Install dev dependencies
-make install-deps
-
-# Build and run
-make run
-
-# Run tests
-make test
 📄 License
-MIT License - see LICENSE file for details.
+
+MIT License — see LICENSE
 
 🙏 Acknowledgments
-QEMU/KVM: Virtualization foundation
 
-noVNC: HTML5 VNC client
+QEMU / KVM
 
-Rust Community: Excellent libraries and tooling
+noVNC
 
-Contributors: Everyone who helps improve this project
+Rust Community
 
-📞 Support
-Issues: GitHub Issues
+All contributors ❤️
 
-Discussions: GitHub Discussions
-
-Wiki: Project Wiki
-
-Quick Start Recap:
-
-bash
+⚡ Quick Start
 git clone <repo-url>
 cd aegis-vm-manager
 sudo make setup
-# Access: http://localhost:3030
+
+
+👉 http://localhost:3030
+
 Enjoy managing your VMs with Aegis! 🚀
